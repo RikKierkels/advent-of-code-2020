@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const log = console.log;
+const unique = (xs) => [...new Set(xs)];
 
 const findProductsOfPairs = (entries, sum = 2020) =>
   entries.flatMap((entry) => (entries.includes(sum - entry) ? entry * (sum - entry) : []));
@@ -17,5 +18,5 @@ const entries = fs
   .split('\n')
   .map((entry) => +entry);
 
-log(findProductsOfPairs(entries));
-log(findProductsOfTriplets(entries));
+log(`Solution pt. 1: ${unique(findProductsOfPairs(entries))}`);
+log(`Solution pt. 2: ${unique(findProductsOfTriplets(entries))}`);
