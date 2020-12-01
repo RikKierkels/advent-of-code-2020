@@ -2,27 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const log = console.log;
 
-const findSumsOfPairs = (entries, sum = 2020) =>
-  entries.flatMap((entry) => {
-    const diff = sum - entry;
-    return entries.includes(diff)
-      ? {
-          matches: [entry, diff],
-          product: entry * diff,
-        }
-      : [];
-  });
+const findProductsOfPairs = (entries, sum = 2020) =>
+  entries.flatMap((entry) => (entries.includes(sum - entry) ? entry * (sum - entry) : []));
 
-const findSumsOfTriplets = (entries, sum = 2020) =>
+const findProductsOfTriplets = (entries, sum = 2020) =>
   entries.flatMap((entry) => {
-    const sumsOfPairs = findSumsOfPairs(entries, sum - entry);
-
-    return sumsOfPairs.length
-      ? sumsOfPairs.map(({ matches, product }) => ({
-          matches: [...matches, entry],
-          product: product * entry,
-        }))
-      : [];
+    const productsOfPairs = findProductsOfPairs(entries, sum - entry);
+    return productsOfPairs.length ? productsOfPairs.map((product) => product * entry) : [];
   });
 
 const pathToEntries = path.join(__dirname, './input.txt');
@@ -31,5 +17,5 @@ const entries = fs
   .split('\n')
   .map((entry) => +entry);
 
-log(findSumsOfPairs(entries));
-log(findSumsOfTriplets(entries));
+log(findProductsOfPairs(entries));
+log(findProductsOfTriplets(entries));
