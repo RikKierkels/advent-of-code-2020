@@ -22,7 +22,7 @@ const findSumsOfTriplets = (entries, sum = 2020) =>
           product
             ? {
                 matches: [...matches, entry],
-                product: matches.reduce((acc, curr) => acc * curr, entry),
+                product: product * entry,
               }
             : [],
         )
