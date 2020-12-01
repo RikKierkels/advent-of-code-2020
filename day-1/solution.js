@@ -18,14 +18,10 @@ const findSumsOfTriplets = (entries, sum = 2020) =>
     const sumsOfPairs = findSumsOfPairs(entries, sum - entry);
 
     return sumsOfPairs.length
-      ? sumsOfPairs.flatMap(({ matches, product }) =>
-          product
-            ? {
-                matches: [...matches, entry],
-                product: product * entry,
-              }
-            : [],
-        )
+      ? sumsOfPairs.map(({ matches, product }) => ({
+          matches: [...matches, entry],
+          product: product * entry,
+        }))
       : [];
   });
 
@@ -36,5 +32,4 @@ const entries = fs
   .map((entry) => +entry);
 
 log(findSumsOfPairs(entries));
-
 log(findSumsOfTriplets(entries));
