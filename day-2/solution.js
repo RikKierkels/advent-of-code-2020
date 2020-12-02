@@ -14,13 +14,15 @@ const hasMatchingCharCount = ([min, max, char, password]) => {
   return charCount >= min && charCount <= max;
 };
 
-const solutionOne = lines.flatMap((line) => (hasMatchingCharCount(line) ? [line] : []));
-log(`Solution pt.1 ${solutionOne.length}`);
-
 const asIndex = (x) => x - 1;
 const normalizeIndex = ([pos1, pos2, ...rest]) => [asIndex(pos1), asIndex(pos2), ...rest];
 const hasMatchingCharPosition = ([pos1, pos2, char, password]) =>
   (password[pos1] === char && password[pos2] !== char) || (password[pos1] !== char && password[pos2] === char);
 
-const solutionTwo = lines.map(normalizeIndex).flatMap((line) => (hasMatchingCharPosition(line) ? [line] : []));
+const validate = (isValidFn) => (line) => (isValidFn(line) ? [line] : []);
+
+const solutionOne = lines.flatMap(validate(hasMatchingCharCount));
+log(`Solution pt.1 ${solutionOne.length}`);
+
+const solutionTwo = lines.map(normalizeIndex).flatMap(validate(hasMatchingCharPosition));
 log(`Solution pt.2 ${solutionTwo.length}`);
