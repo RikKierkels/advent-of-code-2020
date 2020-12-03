@@ -4,9 +4,9 @@ const log = console.log;
 const map = input(__dirname, './input.txt').map((row) => [...row]);
 
 const traverse = (map, right, down) => {
-  const maxDownMoves = map.length / down;
+  const moveCount = map.length / down;
   const width = map[0].length;
-  return Array.from({ length: maxDownMoves }, (_, i) => map[i * down][(i * right) % width]);
+  return Array.from({ length: moveCount }, (_, move) => map[move * down][(move * right) % width]);
 };
 const isTree = (cell) => cell === '#';
 
