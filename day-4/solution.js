@@ -14,7 +14,7 @@ const parseToRecord = (passport) =>
   }, {});
 
 const isWithinRange = (min, max) => (number) => number >= min && number <= max;
-const hasValidHeight = ([_, height, unit]) => (unit === 'cm' ? isWithinRange(150, 193) : isWithinRange(59, 76))(height);
+const isValidHeight = ([_, height, unit]) => (unit === 'cm' ? isWithinRange(150, 193) : isWithinRange(59, 76))(height);
 const match = (pattern) => (string) => string.match(pattern) ?? [];
 const matches = (pattern) => (string) => pattern.test(string);
 const isAlwaysValid = () => true;
@@ -23,7 +23,7 @@ const validator = {
   byr: isWithinRange(1920, 2002),
   iyr: isWithinRange(2010, 2020),
   eyr: isWithinRange(2020, 2030),
-  hgt: compose(hasValidHeight, match(/^(\d+)(cm|in)$/)),
+  hgt: compose(isValidHeight, match(/^(\d+)(cm|in)$/)),
   hcl: matches(/^#[0-9a-f]{6}$/),
   ecl: matches(/^(amb|blu|brn|gry|grn|hzl|oth)$/),
   pid: matches(/^\d{9}$/),
