@@ -1,28 +1,26 @@
-const fs = require('fs');
-const path = require('path');
+const input = require('../input');
 const log = console.log;
+const regex = (string) => new RegExp(string, 'g');
+const match = (pattern) => (string) => string.match(pattern) ?? [];
 
-const toMatchedLine = (line) => line.match(/^(\d+)-(\d+) (\w): (\w+)$/);
-const withoutMatchAll = ([_, ...rest]) => rest;
-const pathToInput = path.join(__dirname, './input.txt');
-const lines = fs.readFileSync(pathToInput, 'utf-8').split('\n').map(toMatchedLine).map(withoutMatchAll);
-
-const asRegex = (value) => new RegExp(value, 'g');
-const getCharCount = (char, string) => (string.match(asRegex(char)) ?? []).length;
-const hasMatchingCharCount = ([min, max, char, password]) => {
-  const charCount = getCharCount(char, password);
-  return charCount >= min && charCount <= max;
+const hasValidCharacterCount = ({ min, max, char, password }) => {
+  const matches = match(regex(char))(password).length;
+  return matches >= min && matches <= max;
 };
 
-const asIndex = (x) => x - 1;
-const normalizeIndex = ([pos1, pos2, ...rest]) => [asIndex(pos1), asIndex(pos2), ...rest];
-const hasMatchingCharPosition = ([pos1, pos2, char, password]) =>
-  (password[pos1] === char && password[pos2] !== char) || (password[pos1] !== char && password[pos2] === char);
+const hasValidCharacterPositions = ({ min, max, char, password }) => {
+  const hasCharacterAtMin = password[min - 1] === char;
+  const hasCharacterAtMax = password[max - 1] === char;
+  return (hasCharacterAtMin && !hasCharacterAtMax) || (!hasCharacterAtMin && hasCharacterAtMax);
+};
 
-const validate = (isValidFn) => (line) => (isValidFn(line) ? [line] : []);
+const passwords = input(__dirname, './input.txt')
+  .split('\n')
+  .map(match(/^(\d+)-(\d+) (\w): (\w+)$/))
+  .map(([_, min, max, char, password]) => ({ min, max, char, password }));
 
-const solutionOne = lines.flatMap(validate(hasMatchingCharCount));
+const solutionOne = passwords.filter(hasValidCharacterCount);
 log(`Solution pt.1 ${solutionOne.length}`);
 
-const solutionTwo = lines.map(normalizeIndex).flatMap(validate(hasMatchingCharPosition));
+const solutionTwo = passwords.filter(hasValidCharacterPositions);
 log(`Solution pt.2 ${solutionTwo.length}`);
