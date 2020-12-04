@@ -1,7 +1,9 @@
 const input = require('../input');
 const log = console.log;
 
-const map = input(__dirname, './input.txt').map((row) => [...row]);
+const map = input(__dirname, './input.txt')
+  .split('\n')
+  .map((row) => [...row]);
 
 const traverse = (map, right, down) => {
   const moveCount = map.length / down;
