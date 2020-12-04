@@ -1,5 +1,4 @@
-const fs = require('fs');
-const path = require('path');
+const input = require('../input');
 const log = console.log;
 const unique = (xs) => [...new Set(xs)];
 
@@ -12,9 +11,7 @@ const findProductsOfTriplets = (entries, sum = 2020) =>
     return productsOfPairs.length ? productsOfPairs.map((product) => product * entry) : [];
   });
 
-const pathToEntries = path.join(__dirname, './input.txt');
-const entries = fs
-  .readFileSync(pathToEntries, 'utf-8')
+const entries = input(__dirname, './input.txt')
   .split('\n')
   .map((entry) => +entry);
 
