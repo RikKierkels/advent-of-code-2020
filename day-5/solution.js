@@ -3,9 +3,9 @@ const log = console.log;
 const compose = (...fns) => (args) => fns.reduceRight((arg, fn) => fn(arg), args);
 const replace = (...args) => (string) => string.replace(...args);
 
-const toIntFromBinaryString = (string) => parseInt(string, 2);
 const replaceUpperHalfsWithOne = replace(/[BR]/g, 1);
 const replaceLowerHalfsWithZero = replace(/[FL]/g, 0);
+const toIntFromBinaryString = (string) => parseInt(string, 2);
 const toSeatID = compose(toIntFromBinaryString, replaceLowerHalfsWithZero, replaceUpperHalfsWithOne);
 
 const ascending = (a, b) => a - b;
