@@ -8,7 +8,7 @@ const replaceUpperHalfsWithOne = replace(/[BR]/g, 1);
 const replaceLowerHalfsWithZero = replace(/[FL]/g, 0);
 const toSeatID = compose(toIntFromBinaryString, replaceLowerHalfsWithZero, replaceUpperHalfsWithOne);
 
-const ascending = (a, b) => (a > b ? 1 : -1);
+const ascending = (a, b) => a - b;
 const isMissingSeatBehind = (id, _, ids) => !ids.includes(id - 1) && ids.includes(id - 2);
 
 const seatIDs = input(__dirname, '/input.txt').split('\n').map(toSeatID);
