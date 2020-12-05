@@ -1,7 +1,7 @@
 const input = require('../input');
 const log = console.log;
 const compose = (...fns) => (args) => fns.reduceRight((arg, fn) => fn(arg), args);
-const split = (on) => (value) => value.split(on);
+const split = (on) => (string) => string.split(on);
 
 const splitOnBlankLine = split('\n\n');
 const splitOnFieldSeparator = split(':');
