@@ -6,8 +6,9 @@ const splitOnBlankLine = split('\n\n');
 const splitOnNewLine = split(/\s+/);
 
 const unique = (values) => [...new Set(values)];
+const isIncludedIn = (values) => (value) => values.includes(value);
 const intersection = (array) =>
-  array.reduce((intersection, values) => unique(values).filter((value) => intersection.includes(value)));
+  array.reduce((intersection, values) => unique(values).filter(isIncludedIn(intersection)));
 const length = (array) => array.length;
 const sum = (a, b) => a + b;
 
