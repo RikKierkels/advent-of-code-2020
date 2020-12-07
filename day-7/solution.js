@@ -12,10 +12,10 @@ const hasPositiveCount = ({ count }) => count;
 const toBagFromRule = compose(toBag, match(/^(\w+ \w+) bags contain (.*)\.$/));
 const toBagContentFromRule = compose(toBagContent, match(/^\s*(\d+) (\w+ \w+).*/));
 
-const hasBagInContents = (bags, match) => (contents = []) => {
-  return contents.some(({ type }) => type === match)
+const hasBagInContents = (bags, bag) => (contents = []) => {
+  return contents.some(({ type }) => type === bag)
     ? true
-    : contents.some(({ type }) => hasBagInContents(bags, match)(bags[type]));
+    : contents.some(({ type }) => hasBagInContents(bags, bag)(bags[type]));
 };
 
 const countBagsInContents = (bags, contents = []) =>
