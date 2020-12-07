@@ -35,9 +35,7 @@ const bags = splitOnNewLine(input(__dirname, './input.txt')).reduce((bags, rule)
   return { ...bags, [type]: contents.flatMap(parseBagContent) };
 }, {});
 
-const solutionOne = Object.keys(bags)
-  .map((type) => hasBagInContents(bags, type))
-  .filter(Boolean).length;
+const solutionOne = Object.keys(bags).filter((type) => hasBagInContents(bags, type)).length;
 log(`Solution pt.1 ${solutionOne}`);
 
 const solutionTwo = countBagContents(bags, 'shiny gold');
