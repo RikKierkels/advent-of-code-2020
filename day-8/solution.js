@@ -2,79 +2,67 @@ const input = require('../input');
 const log = console.log;
 const compose = (...fns) => (args) => fns.reduceRight((arg, fn) => fn(arg), args);
 const match = (pattern) => (string) => string.match(pattern) ?? [];
+const clone = (array) => [...array].map((item) => ({ ...item }));
 
-const accumulate = (argument, { current, accumulator, executed, ...state }) => ({
-  current: current + 1,
-  accumulator: accumulator + argument,
-  executed: [...executed, current],
-  ...state,
-});
+const Program = () => {
+  const operations = {
+    acc: (argument, { current, accumulator, executed, ...state }) => ({
+      current: current + 1,
+      accumulator: accumulator + argument,
+      executed: [...executed, current],
+      ...state,
+    }),
+    jmp: (argument, { current, executed, ...state }) => ({
+      current: current + argument,
+      executed: [...executed, current],
+      ...state,
+    }),
+    nop: (_, { current, executed, ...state }) => ({
+      current: current + 1,
+      executed: [...executed, current],
+      ...state,
+    }),
+  };
 
-const jump = (argument, { current, executed, ...state }) => ({
-  current: current + argument,
-  executed: [...executed, current],
-  ...state,
-});
+  const execute = ({ operation, argument }, state) => operations[operation](argument, state);
+  const isLooping = ({ current, executed }) => executed.includes(current);
+  const hasTerminated = ({ current, instructions }) => current > instructions.length - 1;
 
-const nop = (_, { current, executed, ...state }) => ({
-  current: current + 1,
-  executed: [...executed, current],
-  ...state,
-});
+  const process = (state) => {
+    if (isLooping(state) || hasTerminated(state)) {
+      return { value: state.accumulator, hasTerminated: hasTerminated(state) };
+    }
 
-const executor = {
-  acc: accumulate,
-  jmp: jump,
-  nop: nop,
-};
-
-const parse = ([_, operation, argument]) => [operation, +argument];
-const parseInstruction = compose(parse, match(/^(acc|jmp|nop) ([+-]\d+)$/));
-const execute = ([operation, argument], state) => executor[operation](argument, state);
-const stateFrom = (instructions) => ({ accumulator: 0, current: 0, instructions, executed: [] });
-const isInfiniteLoop = ({ current, executed }) => executed.includes(current);
-const isValid = ({ current, instructions }) => current > instructions.length - 1;
-
-const run = (state, isEndFn) => {
-  while (!isEndFn(state)) {
     const instruction = state.instructions[state.current];
     state = execute(instruction, state);
-  }
-  return state;
+    return process(state);
+  };
+
+  return {
+    run: (instructions) => process({ accumulator: 0, current: 0, executed: [], instructions }),
+  };
 };
 
-const instructions = input(__dirname, './input.txt').split('\n').map(parseInstruction);
+const parseInstruction = ([_, operation, argument]) => ({ operation, argument: +argument });
+const parseInstructionFromLine = compose(parseInstruction, match(/^(acc|jmp|nop) ([+-]\d+)$/));
+const instructions = input(__dirname, './input.txt').split('\n').map(parseInstructionFromLine);
 
-let state = run(stateFrom(instructions), isInfiniteLoop);
-log(`Solution pt.1 ${state.accumulator}`);
+const program = Program();
+
+let result = program.run(instructions);
+log(`Solution pt.1 ${result.value}`);
 
 const isSwappableOperation = (operation) => ['nop', 'jmp'].includes(operation);
 const swapOperation = (operation) => (operation === 'nop' ? 'jmp' : 'nop');
 
-const getNextInstructions = (indexOfLastSwappedOperation, instructions) => {
-  instructions = [...instructions].map((instruction) => [...instruction]);
-  const indexOfSwappedOperation = instructions.findIndex(
-    ([operation], index) => index > indexOfLastSwappedOperation && isSwappableOperation(operation),
-  );
-  const [operation, argument] = instructions[indexOfSwappedOperation];
-  instructions[indexOfSwappedOperation] = [swapOperation(operation), argument];
-  return { indexOfSwappedOperation, instructions };
-};
+result = instructions.reduce((result, { operation, argument }, index, instructions) => {
+  if (result) return result;
+  if (!isSwappableOperation(operation)) return null;
 
-const runTillValidState = (instructions) => {
-  let indexOfLastSwappedOperation = 0;
+  instructions = clone(instructions);
+  instructions[index] = { operation: swapOperation(operation), argument };
+  result = program.run(instructions);
 
-  while (indexOfLastSwappedOperation < instructions.length - 1) {
-    const { indexOfSwappedOperation, instructions: nextInstructions } = getNextInstructions(
-      indexOfLastSwappedOperation,
-      instructions,
-    );
-    indexOfLastSwappedOperation = indexOfSwappedOperation;
-
-    const state = run(stateFrom(nextInstructions), (state) => isInfiniteLoop(state) || isValid(state));
-    if (isValid(state)) return state;
-  }
-};
-
-state = runTillValidState(instructions);
-log(`Solution pt.1 ${state.accumulator}`);
+  return result.hasTerminated ? result : null;
+}, null);
+log(`Solution pt.2 ${result.value}`);
