@@ -49,13 +49,13 @@ const instructions = input(__dirname, './input.txt').split('\n').map(parseInstru
 
 const program = Program();
 
-let result = program.run(instructions);
-log(`Solution pt.1 ${result.value}`);
+const resultOne = program.run(instructions);
+log(`Solution pt.1 ${resultOne.value}`);
 
 const isSwappableOperation = (operation) => ['nop', 'jmp'].includes(operation);
 const swapOperation = (operation) => (operation === 'nop' ? 'jmp' : 'nop');
 
-result = instructions.reduce((result, { operation, argument }, index, instructions) => {
+const resultTwo = instructions.reduce((result, { operation, argument }, index, instructions) => {
   if (result) return result;
   if (!isSwappableOperation(operation)) return null;
 
@@ -65,4 +65,4 @@ result = instructions.reduce((result, { operation, argument }, index, instructio
 
   return result.hasTerminated ? result : null;
 }, null);
-log(`Solution pt.2 ${result.value}`);
+log(`Solution pt.2 ${resultTwo.value}`);
