@@ -2,7 +2,7 @@ const input = require('../input');
 const log = console.log;
 const ascending = (a, b) => a - b;
 
-const findInvalidNumberInWindow = (numbers, lower = 0, upper = 25) => {
+const findInvalidNumber = (numbers, lower = 0, upper = 25) => {
   if (upper >= numbers.length) return;
 
   const window = numbers.slice(lower, upper).sort(ascending);
@@ -18,28 +18,38 @@ const findInvalidNumberInWindow = (numbers, lower = 0, upper = 25) => {
     if (sum > current) window.pop();
   }
 
-  return window.length < 2 ? current : findInvalidNumberInWindow(numbers, ++lower, ++upper);
+  return window.length < 2 ? current : findInvalidNumber(numbers, ++lower, ++upper);
 };
 
-const findEncryptionWeaknessInWindow = (numbers, sumToFind, lower = 0, upper = 1) => {
-  if (upper >= numbers.length) return;
+const findEncryptionWeakness = (numbers, sumTill) => {
+  let lower = 0;
+  let upper = 1;
+  let sum = numbers[lower] + numbers[upper];
+
+  while (upper < numbers.length) {
+    if (sum === sumTill) break;
+
+    if (sum < sumTill) {
+      sum += numbers[upper + 1];
+      upper++;
+    }
+
+    if (sum > sumTill) {
+      sum -= numbers[lower];
+      lower++;
+    }
+  }
 
   const window = numbers.slice(lower, upper);
-  const sum = window.reduce((a, b) => a + b);
-
-  if (sum === sumToFind) return Math.min(...window) + Math.max(...window);
-  if (sum < sumToFind) upper++;
-  if (sum > sumToFind) lower++;
-
-  return findEncryptionWeaknessInWindow(numbers, sumToFind, lower, upper);
+  return Math.min(...window) + Math.max(...window);
 };
 
 const numbers = input(__dirname, './input.txt')
   .split('\n')
   .map((number) => +number);
 
-const solutionOne = findInvalidNumberInWindow(numbers);
+const solutionOne = findInvalidNumber(numbers);
 log(`Solution pt.1 ${solutionOne}`);
 
-const solutionTwo = findEncryptionWeaknessInWindow(numbers, solutionOne);
+const solutionTwo = findEncryptionWeakness(numbers, solutionOne);
 log(`Solution pt.2 ${solutionTwo}`);
