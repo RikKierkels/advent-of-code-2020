@@ -22,7 +22,7 @@ let jolts = input(__dirname, './input.txt').split('\n').map(toInt).sort(ascendin
 const [ones, threes] = getDifferencesOfOneAndThreeJolts([0, ...jolts, jolts[jolts.length - 1] + 3]);
 log(`Solution pt.1 ${ones.length * threes.length}`);
 
-const getPossibleArrangements = (jolts) =>
+const getArrangements = (jolts) =>
   takeLast(
     jolts.reduce(
       (jolts, jolt) => {
@@ -33,5 +33,5 @@ const getPossibleArrangements = (jolts) =>
     ),
   );
 
-const arrangements = getPossibleArrangements(jolts);
+const arrangements = getArrangements(jolts);
 log(`Solution pt.2 ${arrangements}`);
