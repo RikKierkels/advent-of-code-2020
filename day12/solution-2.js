@@ -17,7 +17,7 @@ const move = (position, amount, direction) => ({
 });
 const rotate = (position, times) => Array.from({ length: times }).reduce(({ x, y }) => ({ x: -y, y: x }), position);
 
-const execute = (ship, { action, amount }) => {
+const reducer = (ship, { action, amount }) => {
   switch (action) {
     case 'L':
       return { ...ship, waypoint: rotate(ship.waypoint, mod(amount / 90, 4)) };
@@ -30,7 +30,7 @@ const execute = (ship, { action, amount }) => {
   }
 };
 
-const run = (instructions, ship) => instructions.reduce((ship, instruction) => execute(ship, instruction), ship);
+const run = (instructions, ship) => instructions.reduce((ship, instruction) => reducer(ship, instruction), ship);
 
 const parseInstruction = ([_, action, amount]) => ({ action, amount });
 const instructions = input(__dirname, './input.txt')
