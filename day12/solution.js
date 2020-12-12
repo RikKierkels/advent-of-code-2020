@@ -11,26 +11,30 @@ const DELTAS = {
   W: { x: -1, y: 0 },
 };
 
-const move = (position, amount, direction) => ({
+const move = (position, direction, amount) => ({
   x: position.x + direction.x * amount,
   y: position.y + direction.y * amount,
 });
 const rotate = (position, times) => Array.from({ length: times }).reduce(({ x, y }) => ({ x: -y, y: x }), position);
 
-const reducer = (ship, { action, amount }) => {
+const createReducer = (moving) => (ship, { action, amount }) => {
   switch (action) {
     case 'L':
       return { ...ship, waypoint: rotate(ship.waypoint, mod(amount / 90, 4)) };
     case 'R':
       return { ...ship, waypoint: rotate(ship.waypoint, 4 - mod(amount / 90, 4)) };
     case 'F':
-      return { ...ship, position: move(ship.position, amount, ship.waypoint) };
+      return { ...ship, position: move(ship.position, ship.waypoint, amount) };
     default:
-      return { ...ship, waypoint: move(ship.waypoint, amount, DELTAS[action]) };
+      return { ...ship, [moving]: move(ship[moving], DELTAS[action], amount) };
   }
 };
 
-const run = (instructions, ship) => instructions.reduce((ship, instruction) => reducer(ship, instruction), ship);
+const run = (reducer) => (instructions, ship) =>
+  instructions.reduce((ship, instruction) => reducer(ship, instruction), ship);
+
+const runPartOne = run(createReducer('position'));
+const runPartTwo = run(createReducer('waypoint'));
 
 const parseInstruction = ([_, action, amount]) => ({ action, amount });
 const instructions = input(__dirname, './input.txt')
@@ -38,6 +42,8 @@ const instructions = input(__dirname, './input.txt')
   .map(match(/^([NSEWLRF])(\d+)$/))
   .map(parseInstruction);
 
-const ship = run(instructions, { position: { x: 0, y: 0 }, waypoint: { x: 10, y: 1 } });
-const solution = manhattanDistance(ship.position.x, ship.position.y);
-log(`Solution pt.2 ${solution}`);
+let ship = runPartOne(instructions, { position: { x: 0, y: 0 }, waypoint: DELTAS.E });
+log(`Solution pt.1 ${manhattanDistance(ship.position.x, ship.position.y)}`);
+
+ship = runPartTwo(instructions, { position: { x: 0, y: 0 }, waypoint: { x: 10, y: 1 } });
+log(`Solution pt.2 ${manhattanDistance(ship.position.x, ship.position.y)}`);
