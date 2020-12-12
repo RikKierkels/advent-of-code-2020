@@ -4,7 +4,7 @@ const match = (pattern) => (string) => string.match(pattern) ?? [];
 const mod = (n, mod) => ((n % mod) + mod) % mod;
 const manhattanDistance = (x, y) => Math.abs(x) + Math.abs(y);
 
-const DELTAS = {
+const DIRECTIONS = {
   N: { x: 0, y: 1 },
   E: { x: 1, y: 0 },
   S: { x: 0, y: -1 },
@@ -26,7 +26,7 @@ const createReducer = (moving) => (ship, { action, amount }) => {
     case 'F':
       return { ...ship, position: move(ship.position, ship.waypoint, amount) };
     default:
-      return { ...ship, [moving]: move(ship[moving], DELTAS[action], amount) };
+      return { ...ship, [moving]: move(ship[moving], DIRECTIONS[action], amount) };
   }
 };
 
@@ -42,7 +42,7 @@ const instructions = input(__dirname, './input.txt')
   .map(match(/^([NSEWLRF])(\d+)$/))
   .map(parseInstruction);
 
-let ship = runPartOne(instructions, { position: { x: 0, y: 0 }, waypoint: DELTAS.E });
+let ship = runPartOne(instructions, { position: { x: 0, y: 0 }, waypoint: DIRECTIONS.E });
 log(`Solution pt.1 ${manhattanDistance(ship.position.x, ship.position.y)}`);
 
 ship = runPartTwo(instructions, { position: { x: 0, y: 0 }, waypoint: { x: 10, y: 1 } });
