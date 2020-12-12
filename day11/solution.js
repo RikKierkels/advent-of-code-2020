@@ -22,7 +22,7 @@ const Area = () => {
   const countOccupiedSeatsFromNeighbours = (layout, [selfX, selfY]) =>
     countOccupiedSeats(directions.map(([offsetX, offsetY]) => layout[selfY + offsetY]?.[selfX + offsetX]));
 
-  const countOccupiedSeatsFromLineOfSight = (layout, self, offsetBy = 1) =>
+  const countOccupiedSeatsWithinLineOfSight = (layout, self, offsetBy = 1) =>
     countOccupiedSeats(directions.map((direction) => findOccupiedSeatForDirection(layout, self, direction, offsetBy)));
 
   const findOccupiedSeatForDirection = (layout, [selfX, selfY], [offsetX, offsetY], offsetBy) => {
@@ -42,7 +42,7 @@ const Area = () => {
         if (column === FLOOR) return FLOOR;
 
         const adjacentOccupiedSeatCount = config.isAdjacentLineOfSight
-          ? countOccupiedSeatsFromLineOfSight(currentLayout, [selfX, selfY])
+          ? countOccupiedSeatsWithinLineOfSight(currentLayout, [selfX, selfY])
           : countOccupiedSeatsFromNeighbours(currentLayout, [selfX, selfY]);
 
         if (column === EMPTY) {
