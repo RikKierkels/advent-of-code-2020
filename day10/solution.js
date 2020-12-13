@@ -17,11 +17,11 @@ const findDifferencesOneOrThreeJolts = compose(
   difference,
 );
 
-const findPossibleArrangements = (jolts) =>
+const findPossibleJoltPaths = (jolts) =>
   jolts.reduce(
-    (jolts, jolt) => {
-      const waysToReachJolt = (jolts[jolt - 1] ?? 0) + (jolts[jolt - 2] ?? 0) + (jolts[jolt - 3] ?? 0);
-      return (jolts[jolt] = waysToReachJolt), jolts;
+    (paths, jolt) => {
+      const waysToReachJolt = (paths[jolt - 1] ?? 0) + (paths[jolt - 2] ?? 0) + (paths[jolt - 3] ?? 0);
+      return (paths[jolt] = waysToReachJolt), paths;
     },
     [1],
   );
@@ -33,5 +33,5 @@ const joltsDevice = last(jolts) + 3;
 const [ones, threes] = findDifferencesOneOrThreeJolts([joltsChargingOutlet, ...jolts, joltsDevice]);
 log(`Solution pt.1 ${ones.length * threes.length}`);
 
-const arrangements = last(findPossibleArrangements(jolts));
-log(`Solution pt.2 ${arrangements}`);
+const paths = last(findPossibleJoltPaths(jolts));
+log(`Solution pt.2 ${paths}`);

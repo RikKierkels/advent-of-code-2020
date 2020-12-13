@@ -8,28 +8,28 @@ const Area = () => {
   const OCCUPIED = '#';
   const countOccupiedSeats = count(OCCUPIED);
 
-  const directions = [
-    [-1, 0],
-    [-1, 1],
-    [0, 1],
-    [1, 1],
-    [1, 0],
-    [1, -1],
-    [0, -1],
-    [-1, -1],
+  const DIRECTIONS = [
+    { x: -1, y: 0 },
+    { x: -1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 1, y: 0 },
+    { x: 1, y: -1 },
+    { x: 0, y: -1 },
+    { x: -1, y: -1 },
   ];
 
-  const countOccupiedSeatsFromNeighbours = (layout, [selfX, selfY]) =>
-    countOccupiedSeats(directions.map(([offsetX, offsetY]) => layout[selfY + offsetY]?.[selfX + offsetX]));
+  const countOccupiedSeatsFromNeighbours = (layout, position) =>
+    countOccupiedSeats(DIRECTIONS.map((direction) => layout[position.y + direction.y]?.[position.x + direction.x]));
 
-  const countOccupiedSeatsWithinLineOfSight = (layout, self, offsetBy = 1) =>
-    countOccupiedSeats(directions.map((direction) => findOccupiedSeatForDirection(layout, self, direction, offsetBy)));
+  const countOccupiedSeatsWithinLineOfSight = (layout, position) =>
+    countOccupiedSeats(DIRECTIONS.map((direction) => findOccupiedSeatForDirection(layout, position, direction)));
 
-  const findOccupiedSeatForDirection = (layout, [selfX, selfY], [offsetX, offsetY], offsetBy) => {
-    const neighbour = layout[selfY + offsetY * offsetBy]?.[selfX + offsetX * offsetBy];
+  const findOccupiedSeatForDirection = (layout, position, direction, offsetBy = 1) => {
+    const neighbour = layout[position.y + direction.y * offsetBy]?.[position.x + direction.x * offsetBy];
 
     return neighbour && neighbour === FLOOR
-      ? findOccupiedSeatForDirection(layout, [selfX, selfY], [offsetX, offsetY], ++offsetBy)
+      ? findOccupiedSeatForDirection(layout, position, direction, ++offsetBy)
       : neighbour;
   };
 
@@ -37,13 +37,13 @@ const Area = () => {
     currentLayout.every((row, y) => row.every((column, x) => column === nextLayout[y][x]));
 
   const tick = (currentLayout, config) => {
-    const nextLayout = currentLayout.reduce((nextLayout, row, selfY) => {
-      nextLayout[selfY] = row.map((column, selfX) => {
+    const nextLayout = currentLayout.reduce((nextLayout, row, y) => {
+      nextLayout[y] = row.map((column, x) => {
         if (column === FLOOR) return FLOOR;
 
         const adjacentOccupiedSeatCount = config.isAdjacentLineOfSight
-          ? countOccupiedSeatsWithinLineOfSight(currentLayout, [selfX, selfY])
-          : countOccupiedSeatsFromNeighbours(currentLayout, [selfX, selfY]);
+          ? countOccupiedSeatsWithinLineOfSight(currentLayout, { x, y })
+          : countOccupiedSeatsFromNeighbours(currentLayout, { x, y });
 
         if (column === EMPTY) {
           return adjacentOccupiedSeatCount === 0 ? OCCUPIED : EMPTY;
@@ -60,7 +60,7 @@ const Area = () => {
   };
 
   return {
-    run: tick,
+    simulate: tick,
   };
 };
 
@@ -71,11 +71,11 @@ const layout = input(__dirname, './input.txt')
   .map((row) => [...row]);
 
 const solutionOne = countOccupiedSeats(
-  area.run(layout, { occupiedSeatThreshold: 4, isAdjacentLineOfSight: false }).flat(),
+  area.simulate(layout, { occupiedSeatThreshold: 4, isAdjacentLineOfSight: false }).flat(),
 );
 log(`Solution pt.1 ${solutionOne}`);
 
 const solutionTwo = countOccupiedSeats(
-  area.run(layout, { occupiedSeatThreshold: 5, isAdjacentLineOfSight: true }).flat(),
+  area.simulate(layout, { occupiedSeatThreshold: 5, isAdjacentLineOfSight: true }).flat(),
 );
 log(`Solution pt.2 ${solutionTwo}`);

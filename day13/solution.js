@@ -2,28 +2,37 @@ const input = require('../input');
 const log = console.log;
 const not = (fn) => (...args) => !fn(...args);
 const isNumber = not(isNaN);
+const first = ([first]) => first;
 
-const toNextDeparture = (timestamp) => (id) => ({ id, departure: Math.ceil(timestamp / id) * id });
+const withNextDeparture = (timestamp) => (id) => ({ id, departure: Math.ceil(timestamp / id) * id });
 
-let [timestamp, ids] = input(__dirname, './input.txt').split('\n');
-ids = ids.split(',');
+const findEarliestDepartingBus = (timestamp, busses) =>
+  first(
+    busses
+      .filter(isNumber)
+      .map(withNextDeparture(timestamp))
+      .sort((a, b) => a.departure - b.departure),
+  );
 
-let [earliest] = ids
-  .filter(isNumber)
-  .map(toNextDeparture(timestamp))
-  .sort((a, b) => a.departure - b.departure);
-log(`Solution pt.1 ${earliest.id * (earliest.departure - timestamp)}`);
+const findEarliestTimestampOfSubsequentDepartures = (busses) =>
+  busses.reduce(
+    ({ timestamp, period }, bus, index) => {
+      if (isNaN(bus)) return { timestamp, period };
 
-earliest = ids.reduce(
-  ({ timestamp, period }, id, index) => {
-    if (isNaN(id)) return { timestamp, period };
+      while ((timestamp + index) % bus) {
+        timestamp += period;
+      }
 
-    while ((timestamp + index) % id) {
-      timestamp += period;
-    }
+      return { timestamp, period: period * bus };
+    },
+    { timestamp: 0, period: 1 },
+  );
 
-    return { timestamp, period: period * id };
-  },
-  { timestamp: 0, period: 1 },
-);
+let [timestamp, busses] = input(__dirname, './input.txt').split('\n');
+busses = busses.split(',');
+
+const bus = findEarliestDepartingBus(timestamp, busses);
+log(`Solution pt.1 ${bus.id * (bus.departure - timestamp)}`);
+
+const earliest = findEarliestTimestampOfSubsequentDepartures(busses);
 log(`Solution pt.2 ${earliest.timestamp}`);
