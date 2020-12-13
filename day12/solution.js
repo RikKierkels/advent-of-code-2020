@@ -1,8 +1,9 @@
 const input = require('../input');
 const log = console.log;
+const array = (n) => Array.from({ length: n });
+const manhattanDistance = (x, y) => Math.abs(x) + Math.abs(y);
 const match = (pattern) => (string) => string.match(pattern) ?? [];
 const mod = (n, mod) => ((n % mod) + mod) % mod;
-const manhattanDistance = (x, y) => Math.abs(x) + Math.abs(y);
 
 const DIRECTIONS = {
   N: { x: 0, y: 1 },
@@ -15,7 +16,7 @@ const move = (position, direction, amount) => ({
   x: position.x + direction.x * amount,
   y: position.y + direction.y * amount,
 });
-const rotate = (position, times) => Array.from({ length: times }).reduce(({ x, y }) => ({ x: -y, y: x }), position);
+const rotate = (position, times) => array(times).reduce(({ x, y }) => ({ x: -y, y: x }), position);
 
 const createReducer = (moving) => (ship, { action, amount }) => {
   switch (action) {
@@ -30,8 +31,7 @@ const createReducer = (moving) => (ship, { action, amount }) => {
   }
 };
 
-const run = (reducer) => (instructions, ship) =>
-  instructions.reduce((ship, instruction) => reducer(ship, instruction), ship);
+const run = (reducer) => (instructions, ship) => instructions.reduce(reducer, ship);
 
 const runPartOne = run(createReducer('position'));
 const runPartTwo = run(createReducer('waypoint'));
