@@ -5,8 +5,8 @@ const replace = (...args) => (string) => string.replace(...args);
 
 const replaceUpperHalfsWithOne = replace(/[BR]/g, 1);
 const replaceLowerHalfsWithZero = replace(/[FL]/g, 0);
-const toIntFromBinaryString = (string) => parseInt(string, 2);
-const toSeatID = compose(toIntFromBinaryString, replaceLowerHalfsWithZero, replaceUpperHalfsWithOne);
+const parseBinaryStringToInt = (string) => parseInt(string, 2);
+const toSeatID = compose(parseBinaryStringToInt, replaceLowerHalfsWithZero, replaceUpperHalfsWithOne);
 
 const ascending = (a, b) => a - b;
 const isMissingSeatBehind = (id, _, ids) => !ids.includes(id - 1) && ids.includes(id - 2);
