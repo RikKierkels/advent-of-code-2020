@@ -1,7 +1,6 @@
 const log = console.log;
 
-const play = (starting, maxTurns) => {
-  let memory = new Map();
+const play = (starting, maxTurns, memory = new Map()) => {
   let next;
 
   for (let turn = 1; turn < maxTurns; turn++) {
