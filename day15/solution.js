@@ -13,6 +13,6 @@ const play = (starting, maxTurns) => {
   return next;
 };
 
-log(`Solution pt.1 ${play([15, 5, 1, 4, 7, 0], 2020)}`);
-
-log(`Solution pt.2 ${play([15, 5, 1, 4, 7, 0], 30000000)}`);
+const input = [15, 5, 1, 4, 7, 0];
+log(`Solution pt.1 ${play(input, 2020)}`);
+log(`Solution pt.2 ${play(input, 30000000)}`);
